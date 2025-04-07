@@ -7,6 +7,7 @@ public class ServletInitializer extends SpringBootServletInitializer {
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+//        TODO comentario de prueba
         return application.sources(SkillSwapApplication.class);
     }
 
