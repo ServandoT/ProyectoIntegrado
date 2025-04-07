@@ -7,7 +7,7 @@ public class ServletInitializer extends SpringBootServletInitializer {
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-//        TODO comentario de prueba
+        // Configura la aplicación Spring Boot para que se ejecute en un servidor servlet externo
         return application.sources(SkillSwapApplication.class);
     }
 
