@@ -34,14 +34,12 @@ public class Clase {
 //    @Column(columnDefinition = "integer default 0") // TODO No lo hace
     public Long precio;
 
-    @NotNull
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "usuario_id")
     public Usuario profesor;
 
     public String idioma; // TODO Mirar si se puede hacer un enum
 
-    @NotNull
     @OneToMany(mappedBy = "clase", cascade = CascadeType.ALL, orphanRemoval = true)
     public List<Valoracion> valoraciones;
 }

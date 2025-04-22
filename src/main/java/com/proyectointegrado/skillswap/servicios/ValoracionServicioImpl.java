@@ -1,10 +1,12 @@
 package com.proyectointegrado.skillswap.servicios;
 
 import com.proyectointegrado.skillswap.entidades.Valoracion;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class ValoracionServicioImpl implements ValoracionServicio{
 
     private final ValoracionServicio valoracionServicio;

@@ -2,10 +2,12 @@ package com.proyectointegrado.skillswap.servicios;
 
 import com.proyectointegrado.skillswap.entidades.Clase;
 import com.proyectointegrado.skillswap.repositorios.ClaseRepositorio;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class ClaseServicioImpl implements ClaseServicio{
 
     private final ClaseRepositorio claseRepositorio;
