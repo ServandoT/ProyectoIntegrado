@@ -1,6 +1,7 @@
 package com.proyectointegrado.skillswap.servicios;
 
 import com.proyectointegrado.skillswap.entidades.Valoracion;
+import com.proyectointegrado.skillswap.repositorios.ValoracionRepositorio;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,29 +10,29 @@ import java.util.Optional;
 @Service
 public class ValoracionServicioImpl implements ValoracionServicio{
 
-    private final ValoracionServicio valoracionServicio;
+    private final ValoracionRepositorio valoracionRepositorio;
 
-    public ValoracionServicioImpl(ValoracionServicio valoracionServicio) {
-        this.valoracionServicio = valoracionServicio;
+    public ValoracionServicioImpl(ValoracionRepositorio valoracionRepositorio) {
+        this.valoracionRepositorio = valoracionRepositorio;
     }
 
     @Override
     public List<Valoracion> obtenerValoraciones() {
-        return valoracionServicio.obtenerValoraciones();
+        return valoracionRepositorio.findAll();
     }
 
     @Override
     public Optional<Valoracion> obtenerValoracion(Long id) {
-        return valoracionServicio.obtenerValoracion(id);
+        return valoracionRepositorio.findById(id);
     }
 
     @Override
     public Valoracion guardarValoracion(Valoracion valoracion) {
-        return valoracionServicio.guardarValoracion(valoracion);
+        return valoracionRepositorio.save(valoracion);
     }
 
     @Override
     public void eliminarValoracion(Long id) {
-        valoracionServicio.eliminarValoracion(id);
+        valoracionRepositorio.deleteById(id);
     }
 }
