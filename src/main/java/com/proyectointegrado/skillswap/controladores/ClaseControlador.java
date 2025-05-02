@@ -5,6 +5,7 @@ import com.proyectointegrado.skillswap.entidades.Clase;
 import com.proyectointegrado.skillswap.entidades.Usuario;
 import com.proyectointegrado.skillswap.repositorios.UsuarioRepositorio;
 import com.proyectointegrado.skillswap.servicios.ClaseServicioImpl;
+import com.proyectointegrado.skillswap.servicios.UsuarioServicio;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,12 +20,12 @@ public class ClaseControlador {
 
     private final ClaseServicioImpl claseServicio;
     private final JwtService jwtService;
-    private final UsuarioRepositorio usuarioRepositorio;
+    private final UsuarioServicio usuarioServicio;
 
-    public ClaseControlador(ClaseServicioImpl claseServicio, JwtService jwtService, UsuarioRepositorio usuarioRepositorio) {
+    public ClaseControlador(ClaseServicioImpl claseServicio, JwtService jwtService, UsuarioServicio usuarioServicio) {
         this.claseServicio = claseServicio;
         this.jwtService = jwtService;
-        this.usuarioRepositorio = usuarioRepositorio;
+        this.usuarioServicio = usuarioServicio;
     }
 
     @GetMapping
@@ -36,7 +37,7 @@ public class ClaseControlador {
     public ResponseEntity<?> crearClase(@RequestBody Clase clase, HttpServletRequest request) {
 
         String email = jwtService.extractUsername(getToken(request));
-        Usuario usuario = usuarioRepositorio.findByEmail(email).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Usuario usuario = usuarioServicio.getUsuarioByEmail(email).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
 //        TODO falta algo?
         clase.setProfesor(usuario);
@@ -49,7 +50,7 @@ public class ClaseControlador {
     public ResponseEntity<?> eliminarClase(@RequestParam Long id, HttpServletRequest request) {
 
         String email = jwtService.extractUsername(getToken(request));
-        Usuario usuario = usuarioRepositorio.findByEmail(email).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Usuario usuario = usuarioServicio.getUsuarioByEmail(email).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         Optional<Clase> clase = claseServicio.obtenerClase(id);
 
@@ -68,7 +69,7 @@ public class ClaseControlador {
     public ResponseEntity<?> actualizarClase(@RequestParam Long id, @RequestBody Clase clase, HttpServletRequest request) {
 
         String email = jwtService.extractUsername(getToken(request));
-        Usuario usuario = usuarioRepositorio.findByEmail(email).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Usuario usuario = usuarioServicio.getUsuarioByEmail(email).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         Optional<Clase> claseExistente = claseServicio.obtenerClase(id);
 

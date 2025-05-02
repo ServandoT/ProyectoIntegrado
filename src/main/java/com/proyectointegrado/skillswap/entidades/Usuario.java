@@ -1,5 +1,7 @@
 package com.proyectointegrado.skillswap.entidades;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
@@ -30,6 +32,7 @@ public class Usuario implements UserDetails {
     public String email;
 
     @NotBlank
+    @JsonIgnore
     public String password;
 
 //    @NotNull
@@ -50,6 +53,7 @@ public class Usuario implements UserDetails {
     public List<Reserva> reservas = new ArrayList<>();
 
     @OneToMany(mappedBy = "profesor", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
     public List<Clase> clases = new ArrayList<>();
 
     @Override

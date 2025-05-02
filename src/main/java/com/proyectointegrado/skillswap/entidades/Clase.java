@@ -1,5 +1,6 @@
 package com.proyectointegrado.skillswap.entidades;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -36,6 +37,7 @@ public class Clase {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "usuario_id")
+    @JsonManagedReference
     public Usuario profesor;
 
     public String idioma; // TODO Mirar si se puede hacer un enum
