@@ -35,9 +35,9 @@ public class Usuario implements UserDetails {
     @JsonIgnore
     public String password;
 
-//    @NotNull
-//    @Enumerated(EnumType.STRING)
-//    private Role role;
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private Role rol;
 
     @NotBlank
     public String nombre;
