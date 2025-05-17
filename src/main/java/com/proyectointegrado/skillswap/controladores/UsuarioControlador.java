@@ -1,5 +1,6 @@
 package com.proyectointegrado.skillswap.controladores;
 
+import com.proyectointegrado.skillswap.DTOs.UsuarioModificar;
 import com.proyectointegrado.skillswap.entidades.Role;
 import com.proyectointegrado.skillswap.entidades.Usuario;
 import com.proyectointegrado.skillswap.repositorios.UsuarioRepositorio;
@@ -8,11 +9,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -62,6 +62,37 @@ public class UsuarioControlador {
         respuesta.put("isAdmin", isAdmin);
 
         return ResponseEntity.ok(respuesta);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> eliminarUsuario(@AuthenticationPrincipal Usuario usuario, @PathVariable Long id) {
+        if (usuario == null) {
+            return ResponseEntity.status(401).body("No estás autenticado");
+        }
+
+        usuarioServicio.deleteUsuario(id);
+        return ResponseEntity.status(204).build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> modificarUsuario(@AuthenticationPrincipal Usuario usuario, @PathVariable Long id, @RequestBody UsuarioModificar usuarioModificar) {
+        if (usuario == null) {
+            return ResponseEntity.status(401).body("No estás autenticado");
+        }
+
+        if (!usuario.getRol().equals(Role.ADMIN)) {
+            return ResponseEntity.status(403).body("No tienes permiso para modificar este usuario");
+        }
+
+//        TODO manejar que el usuario con ese ID exista
+        Usuario usuarioExistente = usuarioServicio.getUsuarioById(id).get();
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setSkipNullEnabled(true);
+        modelMapper.map(usuarioModificar, usuarioExistente);
+
+        usuarioServicio.saveUsuario(usuarioExistente);
+
+        return ResponseEntity.status(204).body("Usuario modificado correctamente");
     }
 
 }
