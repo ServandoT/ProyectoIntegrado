@@ -10,4 +10,5 @@ public interface CategoriaServicio {
     public Optional<Categoria> obtenerCategoria(Long id);
     public Categoria guardarCategoria(Categoria categoria);
     public void eliminarCategoria(Long id);
+    public  Categoria obtenerCategoriaByNombre(String nombre);
 }

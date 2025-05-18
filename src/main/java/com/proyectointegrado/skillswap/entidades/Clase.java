@@ -22,35 +22,41 @@ public class Clase {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long id;
+    private Long id;
 
     @NotBlank
-    public String titulo;
+    private String titulo;
 
     @NotBlank
-    public String descripcion;
+    private String descripcion;
 
     @NotNull
-    @OneToMany
-    public List<Categoria> categorias;
+    @ManyToMany
+    @JoinTable(
+            name = "clases_categorias",
+            joinColumns = @JoinColumn(name = "clase_id"),
+            inverseJoinColumns = @JoinColumn(name = "categoria_id")
+    )
+    private List<Categoria> categorias;
 
-//    TODO revisar
+
+    //    TODO revisar
     @NotNull
     @Pattern(regexp = "^\\d{1,2}:\\d{2}$", message = "El formato debe ser HH:mm")
-    public String duracion;
+    private String duracion;
 
     @NotNull
     @Min(value = 0)
 //    @Column(columnDefinition = "integer default 0") // TODO No lo hace
-    public Long precio;
+    private Long precio;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "usuario_id")
     @JsonManagedReference
-    public Usuario profesor;
+    private Usuario profesor;
 
-    public String idioma; // TODO Mirar si se puede hacer un enum
+    private String idioma; // TODO Mirar si se puede hacer un enum
 
     @OneToMany(mappedBy = "clase", cascade = CascadeType.ALL, orphanRemoval = true)
-    public List<Valoracion> valoraciones;
+    private List<Valoracion> valoraciones;
 }

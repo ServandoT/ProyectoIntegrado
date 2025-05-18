@@ -35,4 +35,14 @@ public class CategoriaServicioImpl implements CategoriaServicio {
     public void eliminarCategoria(Long id) {
         categoriaRepositorio.deleteById(id);
     }
+
+    @Override
+    public Categoria obtenerCategoriaByNombre(String nombre) {
+        Optional<Categoria> categoriaOptional = categoriaRepositorio.findByNombre(nombre);
+        if (categoriaOptional.isPresent()) {
+            return categoriaOptional.get();
+        } else {
+            throw new RuntimeException("Categoría no encontrada: " + nombre);
+        }
+    }
 }

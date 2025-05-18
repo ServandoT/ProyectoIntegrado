@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.apache.commons.lang3.builder.ToStringExclude;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -54,6 +55,7 @@ public class Usuario implements UserDetails {
 
     @OneToMany(mappedBy = "profesor", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference
+    @ToString.Exclude
     public List<Clase> clases = new ArrayList<>();
 
     @Override

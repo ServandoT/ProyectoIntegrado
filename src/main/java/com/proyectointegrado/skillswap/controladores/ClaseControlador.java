@@ -1,17 +1,22 @@
 package com.proyectointegrado.skillswap.controladores;
 
+import com.proyectointegrado.skillswap.DTOs.ClaseRequestDTO;
 import com.proyectointegrado.skillswap.conf.JwtService;
+import com.proyectointegrado.skillswap.entidades.Categoria;
 import com.proyectointegrado.skillswap.entidades.Clase;
 import com.proyectointegrado.skillswap.entidades.Usuario;
 import com.proyectointegrado.skillswap.repositorios.UsuarioRepositorio;
+import com.proyectointegrado.skillswap.servicios.CategoriaServicio;
 import com.proyectointegrado.skillswap.servicios.ClaseServicioImpl;
 import com.proyectointegrado.skillswap.servicios.UsuarioServicio;
 import jakarta.servlet.http.HttpServletRequest;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController()
@@ -21,11 +26,13 @@ public class ClaseControlador {
     private final ClaseServicioImpl claseServicio;
     private final JwtService jwtService;
     private final UsuarioServicio usuarioServicio;
+    private final CategoriaServicio categoriaServicio;
 
-    public ClaseControlador(ClaseServicioImpl claseServicio, JwtService jwtService, UsuarioServicio usuarioServicio) {
+    public ClaseControlador(ClaseServicioImpl claseServicio, JwtService jwtService, UsuarioServicio usuarioServicio, CategoriaServicio categoriaServicio) {
         this.claseServicio = claseServicio;
         this.jwtService = jwtService;
         this.usuarioServicio = usuarioServicio;
+        this.categoriaServicio = categoriaServicio;
     }
 
     @GetMapping
@@ -34,14 +41,25 @@ public class ClaseControlador {
     }
 
     @PostMapping
-    public ResponseEntity<?> crearClase(@RequestBody Clase clase, HttpServletRequest request) {
+    public ResponseEntity<?> crearClase(@RequestBody ClaseRequestDTO claseRequestDTO, HttpServletRequest request) {
 
         String email = jwtService.extractUsername(getToken(request));
         Usuario usuario = usuarioServicio.getUsuarioByEmail(email).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-//        TODO falta algo?
+//        TODO revisar
+        Clase clase = new Clase();
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setSkipNullEnabled(true);
+        modelMapper.map(claseRequestDTO, clase);
         clase.setProfesor(usuario);
-
+//        Mapear todas las categorías a partir del nombre
+//        TODO cambiar a Set de categorias en vez de List
+        List<Categoria> categorias = claseRequestDTO.getCategorias().stream()
+                .map(nombre -> categoriaServicio.obtenerCategoriaByNombre(nombre))
+                .toList();
+        clase.setCategorias(categorias);
+        clase.setValoraciones(List.of());
+        clase.setId(null);
         return ResponseEntity.ok(claseServicio.guardarClase(clase));
     }
 
