@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,9 +27,17 @@ public class Clase {
     @NotBlank
     public String titulo;
 
+    @NotBlank
+    public String descripcion;
+
     @NotNull
-    @OneToOne
-    public Categoria categoria;
+    @OneToMany
+    public List<Categoria> categorias;
+
+//    TODO revisar
+    @NotNull
+    @Pattern(regexp = "^\\d{1,2}:\\d{2}$", message = "El formato debe ser HH:mm")
+    public String duracion;
 
     @NotNull
     @Min(value = 0)

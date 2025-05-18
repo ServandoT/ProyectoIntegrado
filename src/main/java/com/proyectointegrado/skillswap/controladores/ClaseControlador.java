@@ -78,7 +78,7 @@ public class ClaseControlador {
             Clase claseNueva = Clase.builder()
                     .id(clase.getId())
                     .titulo(clase.getTitulo())
-                    .categoria(clase.getCategoria())
+                    .categorias(clase.getCategorias())
                     .precio(clase.getPrecio())
                     .profesor(clase.getProfesor())
                     .idioma(clase.getIdioma())
