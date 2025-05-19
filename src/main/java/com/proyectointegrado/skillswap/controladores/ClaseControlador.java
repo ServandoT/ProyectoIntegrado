@@ -1,6 +1,8 @@
 package com.proyectointegrado.skillswap.controladores;
 
 import com.proyectointegrado.skillswap.DTOs.ClaseRequestDTO;
+import com.proyectointegrado.skillswap.DTOs.ClaseResponseDTO;
+import com.proyectointegrado.skillswap.DTOs.UsuarioResponseDTO;
 import com.proyectointegrado.skillswap.conf.JwtService;
 import com.proyectointegrado.skillswap.entidades.Categoria;
 import com.proyectointegrado.skillswap.entidades.Clase;
@@ -37,7 +39,16 @@ public class ClaseControlador {
 
     @GetMapping
     public ResponseEntity<?> listarClases() {
-        return ResponseEntity.ok(claseServicio.obtenerClases());
+        List<Clase> clases = claseServicio.obtenerClases();
+
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setSkipNullEnabled(true);
+
+        List<ClaseResponseDTO> clasesDTO = clases.stream()
+                .map(clase -> modelMapper.map(clase, ClaseResponseDTO.class))
+                .toList();
+
+        return ResponseEntity.ok(clasesDTO);
     }
 
     @PostMapping

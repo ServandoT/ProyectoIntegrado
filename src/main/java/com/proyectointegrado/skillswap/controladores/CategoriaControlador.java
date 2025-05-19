@@ -1,6 +1,7 @@
 package com.proyectointegrado.skillswap.controladores;
 
 import com.proyectointegrado.skillswap.DTOs.CategoriaRequestDTO;
+import com.proyectointegrado.skillswap.DTOs.CategoriaResponseDTO;
 import com.proyectointegrado.skillswap.entidades.Categoria;
 import com.proyectointegrado.skillswap.entidades.Role;
 import com.proyectointegrado.skillswap.entidades.Usuario;
@@ -22,7 +23,14 @@ public class CategoriaControlador {
 
     @GetMapping()
     public ResponseEntity<?> listarCategorias() {
-        return ResponseEntity.ok(categoriaServicio.obtenerCategorias());
+        categoriaServicio.obtenerCategorias();
+
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setSkipNullEnabled(true);
+
+        return ResponseEntity.ok(categoriaServicio.obtenerCategorias().stream()
+                .map(categoria -> modelMapper.map(categoria, CategoriaResponseDTO.class))
+                .toList());
     }
 
     @PostMapping
