@@ -6,10 +6,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -30,6 +27,7 @@ public class Clase {
     @NotBlank
     private String descripcion;
 
+    @ToString.Exclude
     @NotNull
     @ManyToMany
     @JoinTable(
@@ -57,6 +55,7 @@ public class Clase {
 
     private String idioma; // TODO Mirar si se puede hacer un enum
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "clase", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Valoracion> valoraciones;
 }

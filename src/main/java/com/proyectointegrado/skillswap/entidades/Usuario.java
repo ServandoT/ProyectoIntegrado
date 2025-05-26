@@ -51,6 +51,7 @@ public class Usuario implements UserDetails {
     public Long creditos = 0L;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
     public List<Reserva> reservas = new ArrayList<>();
 
     @OneToMany(mappedBy = "profesor", cascade = CascadeType.ALL, orphanRemoval = true)

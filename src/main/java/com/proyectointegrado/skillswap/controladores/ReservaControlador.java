@@ -1,11 +1,15 @@
 package com.proyectointegrado.skillswap.controladores;
 
+import com.proyectointegrado.skillswap.DTOs.ReservaRequestDTO;
 import com.proyectointegrado.skillswap.conf.JwtService;
+import com.proyectointegrado.skillswap.entidades.Clase;
 import com.proyectointegrado.skillswap.entidades.Reserva;
 import com.proyectointegrado.skillswap.entidades.Usuario;
 import com.proyectointegrado.skillswap.repositorios.UsuarioRepositorio;
+import com.proyectointegrado.skillswap.servicios.ClaseServicioImpl;
 import com.proyectointegrado.skillswap.servicios.ReservaServicioImpl;
 import jakarta.servlet.http.HttpServletRequest;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,12 +24,14 @@ public class ReservaControlador {
     private final ReservaServicioImpl reservaServicio;
     private final JwtService jwtService;
     private final UsuarioRepositorio usuarioRepositorio;
+    private final ClaseServicioImpl claseServicio;
 
 
-    public ReservaControlador(ReservaServicioImpl reservaServicio, JwtService jwtService, UsuarioRepositorio usuarioRepositorio) {
+    public ReservaControlador(ReservaServicioImpl reservaServicio, JwtService jwtService, UsuarioRepositorio usuarioRepositorio, ClaseServicioImpl claseServicio) {
         this.reservaServicio = reservaServicio;
         this.jwtService = jwtService;
         this.usuarioRepositorio = usuarioRepositorio;
+        this.claseServicio = claseServicio;
     }
 
     @GetMapping
@@ -44,13 +50,19 @@ public class ReservaControlador {
 
 
     @PostMapping
-    public ResponseEntity<?> crearReserva(@RequestBody Reserva reserva, HttpServletRequest request) {
+    public ResponseEntity<?> crearReserva(@RequestBody ReservaRequestDTO reservaRequestDTO, HttpServletRequest request) {
 
         String email = jwtService.extractUsername(getToken(request));
         Usuario usuario = usuarioRepositorio.findByEmail(email).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-//        TODO faltan cosas
-        return ResponseEntity.ok(reservaServicio.guardarReserva(reserva));
+        Clase clase = claseServicio.obtenerClase(reservaRequestDTO.getIdClase()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        Reserva reserva = Reserva.builder()
+                .usuario(usuario)
+                .clase(clase)
+                .fecha(reservaRequestDTO.getFecha()).build();
+        reservaServicio.guardarReserva(reserva);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping
