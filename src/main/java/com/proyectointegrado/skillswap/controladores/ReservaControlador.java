@@ -57,6 +57,14 @@ public class ReservaControlador {
 
         Clase clase = claseServicio.obtenerClase(reservaRequestDTO.getIdClase()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
+        if (usuario.getCreditos() < clase.getPrecio()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No tienes suficientes créditos para reservar esta clase");
+        }
+
+        usuario.setCreditos(usuario.getCreditos() - clase.getPrecio());
+
+        if (usuario.getCreditos() < 0) usuario.setCreditos(0L);
+
         Reserva reserva = Reserva.builder()
                 .usuario(usuario)
                 .clase(clase)
