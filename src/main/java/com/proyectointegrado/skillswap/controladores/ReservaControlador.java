@@ -1,6 +1,7 @@
 package com.proyectointegrado.skillswap.controladores;
 
 import com.proyectointegrado.skillswap.DTOs.ReservaRequestDTO;
+import com.proyectointegrado.skillswap.conf.EmailServicio;
 import com.proyectointegrado.skillswap.conf.JwtService;
 import com.proyectointegrado.skillswap.entidades.Clase;
 import com.proyectointegrado.skillswap.entidades.Reserva;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/reservas")
@@ -25,13 +27,15 @@ public class ReservaControlador {
     private final JwtService jwtService;
     private final UsuarioRepositorio usuarioRepositorio;
     private final ClaseServicioImpl claseServicio;
+    private final EmailServicio emailServicio;
 
 
-    public ReservaControlador(ReservaServicioImpl reservaServicio, JwtService jwtService, UsuarioRepositorio usuarioRepositorio, ClaseServicioImpl claseServicio) {
+    public ReservaControlador(ReservaServicioImpl reservaServicio, JwtService jwtService, UsuarioRepositorio usuarioRepositorio, ClaseServicioImpl claseServicio, EmailServicio emailServicio) {
         this.reservaServicio = reservaServicio;
         this.jwtService = jwtService;
         this.usuarioRepositorio = usuarioRepositorio;
         this.claseServicio = claseServicio;
+        this.emailServicio = emailServicio;
     }
 
     @GetMapping
@@ -70,7 +74,14 @@ public class ReservaControlador {
                 .clase(clase)
                 .fecha(reservaRequestDTO.getFecha()).build();
         reservaServicio.guardarReserva(reserva);
-        return ResponseEntity.ok().build();
+
+//      Generación de videollamada
+        String sala = "skillswap-" + UUID.randomUUID();
+        String enlace = "https://meet.jit.si/" + sala;
+
+        emailServicio.enviarEmail(usuario.getEmail(), enlace);
+
+        return ResponseEntity.ok(enlace);
     }
 
     @DeleteMapping
@@ -108,5 +119,6 @@ public class ReservaControlador {
                 ? authHeader.substring(7)
                 : null;
     }
+
 
 }

@@ -1,6 +1,7 @@
 package com.proyectointegrado.skillswap.controladores;
 
 import com.proyectointegrado.skillswap.DTOs.UsuarioModificar;
+import com.proyectointegrado.skillswap.DTOs.UsuarioResponseDTO;
 import com.proyectointegrado.skillswap.entidades.Role;
 import com.proyectointegrado.skillswap.entidades.Usuario;
 import com.proyectointegrado.skillswap.repositorios.UsuarioRepositorio;
@@ -15,6 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController()
@@ -47,7 +49,16 @@ public class UsuarioControlador {
     )
     @GetMapping
     public ResponseEntity<?> getUsuarios() {
-        return ResponseEntity.ok(usuarioServicio.getAllUsuarios());
+        List<Usuario> usuarios = usuarioServicio.getAllUsuarios();
+
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setSkipNullEnabled(true);
+
+        List<UsuarioResponseDTO> usuariosDTO = usuarios.stream()
+                .map(usuario -> modelMapper.map(usuario, UsuarioResponseDTO.class))
+                .toList();
+
+        return ResponseEntity.ok(usuariosDTO);
     }
 
     @GetMapping("/admin")

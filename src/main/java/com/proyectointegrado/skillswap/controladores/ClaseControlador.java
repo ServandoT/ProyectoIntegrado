@@ -71,7 +71,9 @@ public class ClaseControlador {
         clase.setCategorias(categorias);
         clase.setValoraciones(List.of());
         clase.setId(null);
-        return ResponseEntity.ok(claseServicio.guardarClase(clase));
+
+        claseServicio.guardarClase(clase);
+        return ResponseEntity.ok().build();
     }
 
 //    TODO implementar que también pueda si es admin
@@ -118,6 +120,23 @@ public class ClaseControlador {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/propias")
+    private ResponseEntity<?> misClases(HttpServletRequest request) {
+        String email = jwtService.extractUsername(getToken(request));
+        Usuario usuario = usuarioServicio.getUsuarioByEmail(email).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        List<Clase> clases = usuario.getClases();
+
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setSkipNullEnabled(true);
+
+        List<ClaseResponseDTO> clasesDTO = clases.stream()
+                .map(clase -> modelMapper.map(clase, ClaseResponseDTO.class))
+                .toList();
+
+        return ResponseEntity.ok(clasesDTO);
     }
 
     private String getToken(HttpServletRequest request) {
