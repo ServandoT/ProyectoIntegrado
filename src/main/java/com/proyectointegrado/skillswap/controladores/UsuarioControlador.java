@@ -106,4 +106,14 @@ public class UsuarioControlador {
         return ResponseEntity.status(204).body("Usuario modificado correctamente");
     }
 
+    @GetMapping("/puntos/pripios")
+    public ResponseEntity<?> puntoPropios(@AuthenticationPrincipal Usuario usuario) {
+        if (usuario == null) {
+            return ResponseEntity.status(401).body("No estás autenticado");
+        }
+
+        Long puntos = usuario.getCreditos();
+
+        return ResponseEntity.ok(puntos);
+    }
 }

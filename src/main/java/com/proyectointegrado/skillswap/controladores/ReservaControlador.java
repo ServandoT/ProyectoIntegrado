@@ -1,6 +1,7 @@
 package com.proyectointegrado.skillswap.controladores;
 
 import com.proyectointegrado.skillswap.DTOs.ReservaRequestDTO;
+import com.proyectointegrado.skillswap.DTOs.ReservaResponseDTO;
 import com.proyectointegrado.skillswap.conf.EmailServicio;
 import com.proyectointegrado.skillswap.conf.JwtService;
 import com.proyectointegrado.skillswap.entidades.Clase;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -75,11 +77,18 @@ public class ReservaControlador {
                 .fecha(reservaRequestDTO.getFecha()).build();
         reservaServicio.guardarReserva(reserva);
 
+        Usuario profesor = clase.getProfesor();
+        profesor.setCreditos(profesor.getCreditos() + clase.getPrecio());
+        usuarioRepositorio.save(profesor);
+
+
 //      Generación de videollamada
         String sala = "skillswap-" + UUID.randomUUID();
         String enlace = "https://meet.jit.si/" + sala;
 
         emailServicio.enviarEmail(usuario.getEmail(), enlace);
+
+        emailServicio.enviarEmailProfesor(profesor.getEmail(), enlace);
 
         return ResponseEntity.ok(enlace);
     }
@@ -113,12 +122,29 @@ public class ReservaControlador {
         return ResponseEntity.ok(reservaServicio.guardarReserva(reserva));
     }
 
+    @GetMapping("/propias")
+    private ResponseEntity<?> misReservas(HttpServletRequest request) {
+        String email = jwtService.extractUsername(getToken(request));
+        Usuario usuario = usuarioRepositorio.findByEmail(email).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        List<Reserva> reservas = usuario.getReservas();
+
+        List<ReservaResponseDTO> reservasDTO = reservas.stream()
+                .map(reserva -> {
+                    ReservaResponseDTO reservaDTO = new ReservaResponseDTO();
+                    reservaDTO.setFecha(reserva.getFecha());
+                    reservaDTO.setTituloClase(reserva.getClase().getTitulo());
+                    return reservaDTO;
+                })
+                .toList();
+
+        return ResponseEntity.ok(reservasDTO);
+    }
+
     private String getToken(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
         return authHeader != null && authHeader.startsWith("Bearer ")
                 ? authHeader.substring(7)
                 : null;
     }
-
-
 }

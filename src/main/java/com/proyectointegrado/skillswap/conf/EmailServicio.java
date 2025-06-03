@@ -25,4 +25,16 @@ public class EmailServicio {
         email.send(mensaje);
     }
 
+    public void enviarEmailProfesor(String para, String enlace) {
+        // Crear el mensaje
+        SimpleMailMessage mensaje = new SimpleMailMessage();
+        mensaje.setFrom("skillswap.daw@gmail.com");
+        mensaje.setTo(para);
+        mensaje.setSubject("Clase reservada");
+        mensaje.setText("Un usuario ha reservado una de tus clases: " + enlace);
+
+        // Enviar el email
+        email.send(mensaje);
+    }
+
 }
