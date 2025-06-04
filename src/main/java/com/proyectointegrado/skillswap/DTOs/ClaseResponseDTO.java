@@ -1,5 +1,6 @@
 package com.proyectointegrado.skillswap.DTOs;
 
+import com.proyectointegrado.skillswap.entidades.Valoracion;
 import lombok.Data;
 
 import java.util.List;
@@ -14,4 +15,5 @@ public class ClaseResponseDTO {
     private String idioma;
     private List<CategoriaResponseDTO> categorias; // Solo nombres
     private UsuarioResponseDTO profesor; // DTO del profesor
+    private List<ValoracionResponseDTO> valoraciones; // Lista de valoraciones de la clase, sin detalles del usuario que las hizo
 }

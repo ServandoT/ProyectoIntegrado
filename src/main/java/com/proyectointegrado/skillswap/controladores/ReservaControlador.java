@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -42,7 +43,14 @@ public class ReservaControlador {
 
     @GetMapping
     public ResponseEntity<?> listarReservas() {
-        return ResponseEntity.ok(reservaServicio.obtenerReservas());
+
+        List<Reserva> reservas = reservaServicio.obtenerReservas();
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setSkipNullEnabled(true);
+        List<ReservaResponseDTO> reservasDTO = reservas.stream()
+                .map(reserva -> modelMapper.map(reserva, ReservaResponseDTO.class))
+                .toList();
+        return ResponseEntity.ok(reservasDTO);
     }
 
     @GetMapping("/usuario")
@@ -85,10 +93,11 @@ public class ReservaControlador {
 //      Generación de videollamada
         String sala = "skillswap-" + UUID.randomUUID();
         String enlace = "https://meet.jit.si/" + sala;
+        LocalDate fecha = reserva.getFecha();
 
-        emailServicio.enviarEmail(usuario.getEmail(), enlace);
+        emailServicio.enviarEmail(usuario.getEmail(), enlace, fecha);
 
-        emailServicio.enviarEmailProfesor(profesor.getEmail(), enlace);
+        emailServicio.enviarEmailProfesor(profesor.getEmail(), enlace, fecha);
 
         return ResponseEntity.ok(enlace);
     }
